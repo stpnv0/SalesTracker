@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SalesTracker</title>
+    <link rel="stylesheet" href="../static/style.css">
+</head>
+<body>
+
+<header>
+    <div class="container">
+        <h1>SalesTracker</h1>
+        <button class="btn btn-outline" style="color:white;border-color:white;" onclick="exportCSV()">Export CSV</button>
+        <small>Exports data according to the filters above</small>
+    </div>
+</header>
+
+<div class="container">
+
+    <!-- Tabs -->
+    <div class="tabs">
+        <button class="tab active" data-tab="items" onclick="switchTab('items')">Items</button>
+        <button class="tab" data-tab="analytics" onclick="switchTab('analytics')">Analytics</button>
+    </div>
+
+    <!-- Items Tab -->
+    <div id="tab-items">
+        <!-- Create Form -->
+        <div class="card">
+            <h2>Add New Item</h2>
+            <input type="hidden" id="edit-id">
+            <div class="form-row">
+                <div>
+                    <label for="item-type">Type</label>
+                    <select id="item-type">
+                        <option value="income">Income</option>
+                        <option value="expense">Expense</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="item-amount">Amount</label>
+                    <input type="number" id="item-amount" step="0.01" min="0.01" placeholder="0.00">
+                </div>
+                <div>
+                    <label for="item-category">Category</label>
+                    <input type="text" id="item-category" placeholder="e.g. Food, Salary">
+                </div>
+                <div>
+                    <label for="item-date">Date</label>
+                    <input type="date" id="item-date">
+                </div>
+            </div>
+            <div class="form-row">
+                <div style="grid-column: 1 / -1;">
+                    <label for="item-description">Description</label>
+                    <input type="text" id="item-description" placeholder="Optional description">
+                </div>
+            </div>
+            <div class="actions">
+                <button class="btn btn-primary" onclick="saveItem()">Add Item</button>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="card">
+            <h2>Filter Items</h2>
+            <div class="filter-row">
+                <div class="field">
+                    <label for="filter-from">From</label>
+                    <input type="date" id="filter-from">
+                </div>
+                <div class="field">
+                    <label for="filter-to">To</label>
+                    <input type="date" id="filter-to">
+                </div>
+                <div class="field">
+                    <label for="filter-category">Category</label>
+                    <input type="text" id="filter-category" placeholder="All">
+                </div>
+                <div class="field">
+                    <label for="filter-type">Type</label>
+                    <select id="filter-type">
+                        <option value="">All</option>
+                        <option value="income">Income</option>
+                        <option value="expense">Expense</option>
+                    </select>
+                </div>
+                <div>
+                    <button class="btn btn-primary" onclick="loadItems()">Apply</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Items Table -->
+        <div class="card">
+            <table>
+                <thead>
+                <tr>
+                    <th onclick="sortBy('type')">Type</th>
+                    <th onclick="sortBy('amount')">Amount</th>
+                    <th onclick="sortBy('category')">Category</th>
+                    <th>Description</th>
+                    <th onclick="sortBy('date')">Date</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody id="items-table-body"></tbody>
+            </table>
+            <div id="empty-items" class="empty-state hidden">No items found. Add your first record above.</div>
+        </div>
+    </div>
+
+    <!-- Analytics Tab -->
+    <div id="tab-analytics" class="hidden">
+        <div class="card">
+            <h2>Analytics Settings</h2>
+            <div class="filter-row">
+                <div class="field">
+                    <label for="analytics-from">From</label>
+                    <input type="date" id="analytics-from">
+                </div>
+                <div class="field">
+                    <label for="analytics-to">To</label>
+                    <input type="date" id="analytics-to">
+                </div>
+                <div class="field">
+                    <label for="analytics-group">Group By</label>
+                    <select id="analytics-group">
+                        <option value="">None</option>
+                        <option value="day">Day</option>
+                        <option value="week">Week</option>
+                        <option value="month" selected>Month</option>
+                        <option value="category">Category</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="analytics-type">Type</label>
+                    <select id="analytics-type">
+                        <option value="">All</option>
+                        <option value="income">Income</option>
+                        <option value="expense">Expense</option>
+                    </select>
+                </div>
+                <div>
+                    <button class="btn btn-primary" onclick="loadAnalytics()">Get Analytics</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card"><div class="stat-value" id="stat-count">-</div><div class="stat-label">Count</div></div>
+            <div class="stat-card"><div class="stat-value" id="stat-sum">-</div><div class="stat-label">Total Sum</div></div>
+            <div class="stat-card"><div class="stat-value" id="stat-avg">-</div><div class="stat-label">Average</div></div>
+            <div class="stat-card"><div class="stat-value" id="stat-median">-</div><div class="stat-label">Median</div></div>
+            <div class="stat-card"><div class="stat-value" id="stat-p90">-</div><div class="stat-label">P90</div></div>
+        </div>
+
+        <!-- Grouped Analytics Table -->
+        <div class="card groups-table hidden" id="groups-card">
+            <h2>Grouped Analytics</h2>
+            <table>
+                <thead>
+                <tr>
+                    <th>Group</th>
+                    <th>Count</th>
+                    <th>Sum</th>
+                    <th>Avg</th>
+                    <th>Median</th>
+                    <th>P90</th>
+                </tr>
+                </thead>
+                <tbody id="groups-table-body"></tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<!-- Edit Modal -->
+<div class="modal-overlay" id="edit-modal">
+    <div class="modal">
+        <h3>Edit Item</h3>
+        <div class="form-row">
+            <div>
+                <label for="modal-type">Type</label>
+                <select id="modal-type">
+                    <option value="income">Income</option>
+                    <option value="expense">Expense</option>
+                </select>
+            </div>
+            <div>
+                <label for="modal-amount">Amount</label>
+                <input type="number" id="modal-amount" step="0.01" min="0.01">
+            </div>
+        </div>
+        <div class="form-row">
+            <div>
+                <label for="modal-category">Category</label>
+                <input type="text" id="modal-category">
+            </div>
+            <div>
+                <label for="modal-date">Date</label>
+                <input type="date" id="modal-date">
+            </div>
+        </div>
+        <div class="form-row">
+            <div style="grid-column: 1 / -1;">
+                <label for="modal-description">Description</label>
+                <input type="text" id="modal-description">
+            </div>
+        </div>
+        <div class="actions">
+            <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+            <button class="btn btn-primary" onclick="updateItem()">Save Changes</button>
+        </div>
+    </div>
+</div>
+
+<script src="../static/app.js"></script>
+</body>
+</html>
