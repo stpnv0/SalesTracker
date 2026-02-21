@@ -86,7 +86,7 @@
 | `from`     | да           | Начало периода (`YYYY-MM-DD`)      |
 | `to`       | да           | Конец периода (`YYYY-MM-DD`)       |
 | `group_by` | нет          | `day`, `week`, `month`, `category` |
-| `type`     | да           | Тип операции (`income`/`expense`)      |
+| `type`     | нет          | Тип операции (`income`/`expense`)  |
 
 ### Экспорт
 
@@ -97,8 +97,6 @@
 Поддерживает те же фильтры: `from`, `to`, `category`, `type`.
 
 ---
-
-## Запуск
 
 ## Запуск
 
