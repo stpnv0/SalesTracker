@@ -105,7 +105,7 @@
 ```bash
 # Клонировать
 git clone https://github.com/stpnv0/SalesTracker.git
-cd EventBooker
+cd SalesTracker
 
 # Запустить
 docker-compose up --build
