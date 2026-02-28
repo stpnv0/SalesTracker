@@ -39,7 +39,7 @@ func formatValidationErrors(err error) error {
 
 type CreateItemRequest struct {
 	Type        string          `json:"type"        validate:"required,oneof=income expense"`
-	Amount      decimal.Decimal `json:"amount"      validate:"required,gt=0"`
+	Amount      decimal.Decimal `json:"amount"`
 	Category    string          `json:"category"    validate:"required,max=100"`
 	Description string          `json:"description" validate:"max=1000"`
 	Date        string          `json:"date"        validate:"required,datetime=2006-01-02"`
@@ -48,6 +48,9 @@ type CreateItemRequest struct {
 func (r CreateItemRequest) Validate() error {
 	if err := validate.Struct(r); err != nil {
 		return formatValidationErrors(err)
+	}
+	if !r.Amount.IsPositive() {
+		return fmt.Errorf("%w: Amount must be greater than 0", domain.ErrValidation)
 	}
 	return nil
 }
@@ -72,7 +75,7 @@ func (r CreateItemRequest) ToItem() (domain.Item, error) {
 
 type UpdateItemRequest struct {
 	Type        string          `json:"type"        validate:"required,oneof=income expense"`
-	Amount      decimal.Decimal `json:"amount"      validate:"required,gt=0"`
+	Amount      decimal.Decimal `json:"amount"`
 	Category    string          `json:"category"    validate:"required,max=100"`
 	Description string          `json:"description" validate:"max=1000"`
 	Date        string          `json:"date"        validate:"required,datetime=2006-01-02"`
@@ -81,6 +84,9 @@ type UpdateItemRequest struct {
 func (r UpdateItemRequest) Validate() error {
 	if err := validate.Struct(r); err != nil {
 		return formatValidationErrors(err)
+	}
+	if !r.Amount.IsPositive() {
+		return fmt.Errorf("%w: Amount must be greater than 0", domain.ErrValidation)
 	}
 	return nil
 }
