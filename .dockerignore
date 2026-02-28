@@ -1,0 +1,8 @@
+bin/
+.env
+*.md
+.git/
+.gitignore
+.dockerignore
+docker-compose.yaml
+.mockery.yaml

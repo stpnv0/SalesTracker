@@ -1,0 +1,20 @@
+packages:
+  github.com/stpnv0/SalesTracker/internal/service:
+    config:
+      dir: "{{.InterfaceDir}}"
+      template: testify
+      pkgname: service
+      filename: "mock_test.go"
+    interfaces:
+      itemRepository:
+      analyticsRepository:
+  github.com/stpnv0/SalesTracker/internal/handler:
+    config:
+      dir: "{{.InterfaceDir}}"
+      template: testify
+      pkgname: handler
+      filename: "mock_test.go"
+    interfaces:
+      itemService:
+      analyticsService:
+      exportItemService:
